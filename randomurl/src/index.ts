@@ -10,7 +10,7 @@ export default defineEndpoint((router, { services, exceptions }) => {
 			.readByQuery({ sort: ['url'],filter:{code: {_eq:req.params.code},active: {_eq:'true'}}, fields: ['*'] })
 			.then((results:Array<any>) => {
 				if(results.length==0){
-					res.send("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+					res.redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 					return;
 				}
 				const urls = [];
@@ -21,7 +21,7 @@ export default defineEndpoint((router, { services, exceptions }) => {
 					
 				}
 
-				res.send(urls[randomInt(urls.length)])
+				res.redirect(urls[randomInt(urls.length)])
 			})
 			.catch((error:any) => {
 				return next(new ServiceUnavailableException(error.message));
