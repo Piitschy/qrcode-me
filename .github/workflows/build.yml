@@ -23,7 +23,7 @@ jobs:
         npm install
         npm run build
     
-    - name: SFTP-Deploy frontend
+    - name: SFTP-Deploy
       uses: SamKirkland/FTP-Deploy-Action@2.0.0
       env:
         FTP_SERVER: ${{ secrets.SERVER }}
