@@ -1,0 +1,35 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [main]
+    
+name: 🚀 build
+jobs:
+  build_and_sftp:
+    name: Build and SFTP
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@main
+      
+    - name: Use Node.js 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    
+    - name: Build NPM
+      run: |
+        cd randomurl
+        npm install
+        npm run build
+    
+    - name: SFTP-Deploy frontend
+      uses: SamKirkland/FTP-Deploy-Action@2.0.0
+      env:
+        FTP_SERVER: ${{ secrets.SERVER }}
+        FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        LOCAL_DIR: ./extensions/
+        REMOTE_DIR: ${{ secrets.REMOTE_PATH }}extensions/
+        METHOD: sftp
+        PORT: ${{ secrets.PORT }}
