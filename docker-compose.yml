@@ -24,7 +24,6 @@ services:
     ports:
       - '${PORTBASE}55:8055'
     volumes:
-      - uploads:/directus/uploads
       - extensions:/directus/extensions
     networks:
       - directus
@@ -69,6 +68,5 @@ networks:
   directus:
 
 volumes:
-  uploads:
   db:
   extensions:
