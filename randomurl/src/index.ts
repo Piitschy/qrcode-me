@@ -2,6 +2,7 @@ import { defineEndpoint } from '@directus/extensions-sdk';
 import { randomInt } from 'crypto';
 
 export default { 
+  id: 'qr',
   handler: (router, { services, exceptions }) =>  {
     const { ItemsService } = services;
     const { ServiceUnavailableException } = exceptions;
