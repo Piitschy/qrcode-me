@@ -60,6 +60,10 @@ services:
 
 networks:
   traefik-public:
+    driver: overlay
+    external: true
+    attachable: true
+
 
 volumes:
   db:
