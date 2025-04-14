@@ -5,8 +5,6 @@ services:
     image: postgis/postgis:13-master
     volumes:
       - db:/var/lib/postgresql/data
-    networks:
-      - directus
     environment:
       POSTGRES_USER: 'directus'
       POSTGRES_PASSWORD: '${DB_PASSWORD}'
@@ -18,7 +16,6 @@ services:
     volumes:
       - extensions:/directus/extensions
     networks:
-      - directus
       - traefik-public
     depends_on:
       - database
@@ -62,7 +59,6 @@ services:
 
 
 networks:
-  directus:
   traefik-public:
 
 volumes:
