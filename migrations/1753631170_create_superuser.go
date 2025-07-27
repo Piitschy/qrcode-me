@@ -14,14 +14,20 @@ func init() {
 			return err
 		}
 
+		mail := os.Getenv("SUPERUSER_EMAIL")
+		if mail == "" {
+			app.Logger().Warn("SUPERUSER_EMAIL is not set, skipping superuser creation")
+			return nil
+		}
+
 		record, err := app.FindAuthRecordByEmail(
 			core.CollectionNameSuperusers,
-			os.Getenv("SUPERUSER_EMAIL"),
+			mail,
 		)
 		if err != nil {
 			record = core.NewRecord(superusers)
 		}
-		record.Set("email", os.Getenv("SUPERUSER_EMAIL"))
+		record.Set("email", mail)
 		record.Set("password", os.Getenv("SUPERUSER_PASSWORD"))
 
 		return app.Save(record)
