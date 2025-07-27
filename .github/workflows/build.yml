@@ -1,40 +1,58 @@
+name: Docker Image CI to Prod
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [main]
-    
-name: 🚀 build
-jobs:
-  build_and_sftp:
-    name: Build and SFTP
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+jobs:  
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+
+      - name: Install dependencies
+        run: go get .
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Run tests
+        run: go test -v ./...
+        
+  build-and-push:
+    needs: test
+    if: github.event.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@main
-      
-    - name: Use Node.js 18.x
-      uses: actions/setup-node@v1
-      with:
-        node-version: '18.x'
     
-    - name: Build NPM
+    - name: Set TAG
       run: |
-        cd randomurl
-        npm install
-        npm run build
-    
-    - name: SFTP-Deploy
-      uses: SamKirkland/FTP-Deploy-Action@2.0.0
-      env:
-        FTP_SERVER: ${{ secrets.SERVER }}
-        FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
-        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        LOCAL_DIR: ./extensions/
-        REMOTE_DIR: ${{ secrets.REMOTE_PATH }}
-        METHOD: sftp
-        PORT: ${{ secrets.PORT }}
+        IMG=ghcr.io/${GITHUB_REPOSITORY@L}
+        echo "IMG=$IMG" >> $GITHUB_ENV
+        VERSION=${GITHUB_REF#refs/tags/v}
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        
+    - uses: actions/checkout@v4
+            
+    - name: Log in to ghcr.io
+      run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      
+    - name: Build docker image
+      run: docker build -t ${{ env.IMG }}:latest -t ${{ env.IMG }}:${{env.VERSION}} .
 
-    - name: Pull WebHook for portainer restart
-      uses: muinmomin/webhook-action@v1.0.0
+    - name: Push image to GHCR
+      run: docker push ${{ env.IMG }} --all-tags
+    
+    - name: Publish Release to GitHub
+      uses: softprops/action-gh-release@v2
       with:
-        url: ${{ secrets.PORTAINER_PULL_HOOK }}
+        draft: false
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

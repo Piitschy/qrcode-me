@@ -1,3 +1,9 @@
+# qrcode-me
+
+
+## usage
+
+```docker-compose
 services:
   node:
     image: ghcr.com/piitschy/qrcode-me:latest
@@ -13,4 +19,4 @@ services:
 
 volumes:
   database:
-
+```
