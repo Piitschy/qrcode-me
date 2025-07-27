@@ -6,6 +6,13 @@
 air
 ```
 
+And then login with the superuser credentials:
+
+```bash
+dev@qrcode-me.de
+HelloWorld@1234
+```
+
 ## Usage
 
 ```docker-compose
