@@ -9,9 +9,6 @@ RUN go build -o ./pocketbase ./main.go
 
 FROM alpine:latest AS production
 
-ENV ADMIN_EMAIL
-ENV ADMIN_PASSWORD
-
 WORKDIR /pb
 
 COPY --from=build /app/pocketbase /pb/pocketbase
