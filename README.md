@@ -1,7 +1,12 @@
 # qrcode-me
 
+## Development
 
-## usage
+```bash
+air
+```
+
+## Usage
 
 ```docker-compose
 services:
